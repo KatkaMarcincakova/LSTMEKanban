@@ -1,0 +1,66 @@
+﻿@page "/"
+@inject DataContext dataContext
+
+<PageTitle>Home</PageTitle>
+
+<div class="d-flex justify-content-around">
+    <div class="align-self-start col-4 m-2">
+        <div class="status-card-title waiting-status-bar-bg"></div>
+        <div class="status-card p-2">
+            <div class="d-flex justify-content-between">
+                <h4 class="fw-bold w-auto">Waiting</h4>
+                <h4>
+                    <a @onclick="OpenAddTask" class="w-auto create-ticket"><i class="fa-solid fa-circle-plus"></i></a>
+                </h4>
+            </div>
+            @foreach(var task in _tasks) {
+                <div class="card">
+                    <div class="card-body">
+                        <h6 class="fw-bolder">@task.Name</h6>
+                        @task.Notes
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+    <div class="align-self-start col-4 m-2">
+        <div class="status-card-title inprogress-status-bar-bg"></div>
+        <div class="status-card p-2">
+            <h4 class="fw-bold">In progress</h4>
+            aa
+        </div>
+    </div>
+    <div class="align-self-start col-4 m-2">
+        <div class="status-card-title done-status-bar-bg"></div>
+        <div class="status-card p-2">
+            <h4 class="fw-bold">Done</h4>
+            aa
+        </div>
+    </div>
+</div>
+
+    
+<AddTask ValidSubmitCallback="OnTaskAdded" @ref="_addTaskDialog"></AddTask>
+
+@code {
+    private AddTask? _addTaskDialog;
+    private IEnumerable<PrintTask> _tasks = default!;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _tasks = await dataContext.PrintTasks.ToListAsync();
+
+        await base.OnInitializedAsync();
+    }
+
+    private void OpenAddTask()
+    {
+        _addTaskDialog?.ShowDialog();
+    }
+
+    private async Task OnTaskAdded()
+    {
+        StateHasChanged();
+        _tasks = await dataContext.PrintTasks.ToListAsync();
+    }
+}

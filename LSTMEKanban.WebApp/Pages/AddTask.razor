@@ -1,0 +1,88 @@
+﻿@inject DataContext DataContext
+@inject IJSRuntime JS
+
+<div class="modal fade" id="@ADD_TASK" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Pridať task</h5>
+                <button type="button" class="btn-close" @onclick="@HideDialog"></button>
+            </div>
+            <div class="modal-body">
+                <EditForm Model="_modelObject" OnValidSubmit="HandleValidSubmit">
+                    <DataAnnotationsValidator/>
+                    <ValidationSummary/>
+
+                    <div class="form-group">
+                        <label>Názov</label>
+                        <InputText class="form-control" @bind-Value="_modelObject.Name"></InputText>
+                        <ValidationMessage For="() => _modelObject.Name"/>
+                    </div>
+
+                    <div class="form-group">
+                        <label>URL</label>
+                        <InputText class="form-control" @bind-Value="_modelObject.Url"></InputText>
+                        <ValidationMessage For="() => _modelObject.Url"/>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Notes</label>
+                        <InputText class="form-control" @bind-Value="_modelObject.Notes"></InputText>
+                        <ValidationMessage For="() => _modelObject.Notes"/>
+                    </div>
+
+                    <button type="submit" class="btn-grad">Pridať</button>
+                </EditForm>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public EventCallback<bool> ValidSubmitCallback { get; set; }
+
+    [Parameter]
+    public EventCallback<bool> CloseEventCallback { get; set; }
+
+    private PrintTask _modelObject { get; set; } = new();
+
+    private const string ADD_TASK = "add-task";
+
+    protected async void ChangeDialogVisibility(bool visibility)
+    {
+        if(visibility)
+            await JS.InvokeVoidAsync("bootstrapInteropt.showModal", ADD_TASK);
+        else
+            await JS.InvokeVoidAsync("bootstrapInteropt.hideModal", ADD_TASK);
+
+        StateHasChanged();
+    }
+
+    public virtual void ShowDialog()
+    {
+        ChangeDialogVisibility(true);
+
+        _modelObject = new();
+    }
+
+    protected virtual async void HideDialog()
+    {
+        ChangeDialogVisibility(false);
+        await CloseEventCallback.InvokeAsync();
+    }
+
+    protected virtual async Task HandleValidSubmit()
+    {
+        HideDialog();
+        _modelObject.CreateDateTime = DateTime.Now;
+        await DataContext.AddAsync(_modelObject);
+        await DataContext.SaveChangesAsync();
+        await ValidSubmitCallback.InvokeAsync();
+    }
+
+    protected virtual void OnCancelDialog()
+    {
+        HideDialog();
+    }
+}

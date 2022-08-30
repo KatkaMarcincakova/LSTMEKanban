@@ -1,0 +1,26 @@
+﻿:root {
+    --light-purple: #f5ecff;
+    --dark-pink: #c55272;
+    --dark-blue: #2f4858;
+    --dark-purple: #DF33FE;
+    --light-blue: #24D0D7;
+}
+.light-purple-bg {
+    background-color: var(--light-purple) !important;
+}
+
+.waiting-status-bar-bg {
+    background-image: linear-gradient(to right, #DF33FE, #8973FA, #3CA2F8);
+}
+
+.inprogress-status-bar-bg {
+    background-image: linear-gradient(to right, #34D0FC, #24D0D7, #15D1BB);
+}
+
+.done-status-bar-bg {
+    background-image: linear-gradient(to right, #17D0BA, #92D2A9, #C4CE90);
+}
+
+.dark-blue-text-color {
+    color: var(--dark-blue) !important;
+}
